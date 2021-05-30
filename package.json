@@ -1,0 +1,23 @@
+{
+  "name": "notes",
+  "version": "1.0.0",
+  "description": "Server-Client App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PavelAsadchy/Notes.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "React"
+  ],
+  "author": "Pavel Asadchy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PavelAsadchy/Notes/issues"
+  },
+  "homepage": "https://github.com/PavelAsadchy/Notes#readme"
+}
