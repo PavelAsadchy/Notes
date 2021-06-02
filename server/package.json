@@ -4,8 +4,9 @@
   "description": "NodeJS Server",
   "main": "server.ts",
   "scripts": {
+    "start": "ts-node-dev --respawn src/server.ts",
     "build": "tsc src/server.ts",
-    "dev": "ts-node src/server.ts",
+    "dev": "nodemon --exec ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,6 +39,7 @@
     "@types/yamljs": "^0.2.31",
     "nodemon": "^2.0.7",
     "ts-node": "^10.0.0",
+    "ts-node-dev": "^1.1.6",
     "typescript": "^4.3.2"
   }
 }

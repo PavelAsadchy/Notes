@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import swaggerUI from 'swagger-ui-express';
 import path from 'path';
 import YAML from 'yamljs';
-// import userRouter from './resources/users/user.router';
+import userRouter from './resourses/users/user.router';
 // import noteRouter from './resources/notes/note.router';
 // import taskRouter from './resources/tasks/task.router';
 
@@ -21,7 +21,7 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// app.use('/users', userRouter);
+app.use('/users', userRouter);
 // app.use('/notes', noteRouter);
 
 export default app;
