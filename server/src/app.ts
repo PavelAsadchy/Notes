@@ -3,8 +3,8 @@ import swaggerUI from 'swagger-ui-express';
 import path from 'path';
 import YAML from 'yamljs';
 import userRouter from './resourses/users/user.router';
-// import noteRouter from './resources/notes/note.router';
-// import taskRouter from './resources/tasks/task.router';
+import categoryRouter from './resourses/categories/category.router';
+import noteRouter from './resourses/notes/note.router';
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
@@ -22,6 +22,7 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use('/users', userRouter);
-// app.use('/notes', noteRouter);
+app.use('/categories', categoryRouter);
+categoryRouter.use('/:categoryId/notes', noteRouter);
 
 export default app;
