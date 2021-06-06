@@ -1,0 +1,497 @@
+openapi: 3.0.0
+info:
+  title: Notes Service
+  description: Notes Service
+  version: 1.0.0
+
+servers:
+  - url: /
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        login:
+          type: string
+    Category:
+      properties:
+        id: 
+          type: string
+        title:
+          type: string
+        order:
+          type: integer
+    Note:
+      required:
+        - title
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        order:
+          type: number
+        description:
+          type: string
+        isUrgent:
+          type: boolean
+        userId:
+          type: string
+        categoryId:
+          type: string
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      description: Gets all users (remove password from response)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: Creates a new user (remove password from response)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                name:
+                  type: string
+                  description: The user's name
+                login:
+                  type: string
+                  description: The user's login
+                password:
+                  type: string
+                  description: The user's password
+              required:
+                - name
+      responses:
+        201:
+          description: The user has been created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      description: Gets a user by ID
+        e.g. “/users/123” (remove password from response)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: User not found
+    put:
+      tags:
+        - Users
+      summary: Update a user
+      description: Updates a user by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                name:
+                  type: string
+                  description: The user's name
+                login:
+                  type: string
+                  description: The user's login
+                password:
+                  type: string
+                  description: The user's password
+              required:
+                - name
+      responses:
+        200:
+          description: The user has been updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: Deletes user by ID. When somebody
+        DELETE User, all Notes where User is assignee
+        should be removed
+      responses:
+        204:
+          description: The user has been deleted
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: User not found
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      description: Returns all categoties
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Categories
+      summary: Create category
+      description: Creates a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                title:
+                  type: string
+                  description: The board's name
+                order:
+                  type: integer
+                  description: The category's order
+              required:
+                - title
+                - order
+      responses:
+        201:
+          description: The category has been created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /categories/{categoryId}:
+    parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Categories
+      summary: Get category by id
+      description: Gets the Category by ID (e.g. “/categories/123”)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: CAtegory not found
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      description: Updates a Category by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                title:
+                  type: string
+                  description: The category's name
+                order:
+                  type: integer
+                  description: The category's order
+              required:
+                - title
+                - columns
+      responses:
+        200:
+          description: The category has been updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      description: Deletes a Category by ID.
+        When somebody DELETE Category,
+        all its Tasks should be updated to put categoryId=null
+      responses:
+        204:
+          description: The category has been deleted
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Category not found
+  /categories/{categoryId}/notes:
+    parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Notes
+      summary: Get all notes by categoryId
+      description: Gets notes by the Category ID
+        (e.g. “/category/1/notes)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Notes
+      summary: Create new note
+      description: Creates a new note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                title:
+                  type: string
+                  description: The note's title
+                order:
+                  type: integer
+                  description: The note's order
+                description:
+                  type: string
+                isUrgent:
+                  type: boolean
+                  description: Is note urgent
+                userId:
+                  type: string
+                  description: The note's Assignee
+                categoryId:
+                  type: string
+                  description: The note's category
+              required:
+                - title
+                - order
+                - isUrgent
+      responses:
+        201:
+          description: The note has been created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /categories/{categoryId}/notes/{noteId}:
+    parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: noteId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Notes
+      summary: Get Note by categoryId and noteId
+      description: Gets the Note by the Category's and note ID
+        (e.g. “/category/1/notes/123”)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      tags:
+        - Notes
+      summary: Update Note
+      description: Updates a Note by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                title:
+                  type: string
+                  description: The note's title
+                order:
+                  type: integer
+                  description: The note's order
+                description:
+                  type: string
+                isUrgent:
+                  type: boolean
+                  description: Is note urgent
+                userId:
+                  type: string
+                  description: The note's Assignee
+                categoryId:
+                  type: string
+                  description: The note's Category
+              required:
+                - order
+                - userId
+                - categoryId
+      responses:
+        200:
+          description: The note has been updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Note not found
+    delete:
+      tags:
+        - Notes
+      summary: Delete Note
+      description: Deletes a Note by ID.
+      responses:
+        204:
+          description: The note has been deleted
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Note not found
+  /login:
+    post:
+      tags:
+        - Login
+      security:
+        []
+      summary: Login
+      description: Logins a user and returns a JWT-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                login:
+                  type: string
+                  description: Username
+                password:
+                  type: string
+                  description: Password
+              required:
+                - user
+                - login
+      responses:
+        200:
+          description: Successful login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                description: JWT Token
+        403:
+          description: Incorrect login or password
