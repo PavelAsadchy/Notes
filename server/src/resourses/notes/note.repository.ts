@@ -43,7 +43,7 @@ const updateByMatch = async (categoryId: string): Promise<void> => {
     .map((note: Note) => note.categoryId = null);
 };
 
-const removeByMatch = async(userId: string) => {
+const removeByMatch = async(userId: string): Promise<void> => {
   for (
     let i = DB[TABLE].findIndex((note: Note) => note.userId === userId);
     i >= 0;
