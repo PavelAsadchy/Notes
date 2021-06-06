@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
-const asyncWrapper = (callback: Function) => (req: Request, res: Response, next: NextFunction) => callback(req, res, next).catch(next);
+type cbFunc = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => Promise<void>
+
+const asyncWrapper = (callback: cbFunc): cbFunc => (req: Request, res: Response, next: NextFunction) => callback(req, res, next).catch(next);
 
 export default asyncWrapper;

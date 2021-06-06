@@ -18,7 +18,15 @@ components:
           type: string
         login:
           type: string
-    Notes:
+    Category:
+      properties:
+        id: 
+          type: string
+        title:
+          type: string
+        order:
+          type: integer
+    Note:
       required:
         - title
       properties:
@@ -30,7 +38,11 @@ components:
           type: number
         description:
           type: string
+        isUrgent:
+          type: boolean
         userId:
+          type: string
+        categoryId:
           type: string
   responses:
     UnauthorizedError:
@@ -161,8 +173,8 @@ paths:
         - Users
       summary: Delete user
       description: Deletes user by ID. When somebody
-        DELETE User, all Tasks where User is assignee
-        should be updated to put userId=null
+        DELETE User, all Notes where User is assignee
+        should be removed
       responses:
         204:
           description: The user has been deleted
@@ -170,12 +182,139 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         404:
           description: User not found
-  /notes:
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      description: Returns all categoties
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      tags:
+        - Categories
+      summary: Create category
+      description: Creates a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                title:
+                  type: string
+                  description: The board's name
+                order:
+                  type: integer
+                  description: The category's order
+              required:
+                - title
+                - order
+      responses:
+        201:
+          description: The category has been created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /categories/{categoryId}:
+    parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Categories
+      summary: Get category by id
+      description: Gets the Category by ID (e.g. “/categories/123”)
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: CAtegory not found
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      description: Updates a Category by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                title:
+                  type: string
+                  description: The category's name
+                order:
+                  type: integer
+                  description: The category's order
+              required:
+                - title
+                - columns
+      responses:
+        200:
+          description: The category has been updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      description: Deletes a Category by ID.
+        When somebody DELETE Category,
+        all its Tasks should be updated to put categoryId=null
+      responses:
+        204:
+          description: The category has been deleted
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Category not found
+  /categories/{categoryId}/notes:
+    parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: string
     get:
       tags:
         - Notes
-      summary: Get all notes
-      description: Returns all notes
+      summary: Get all notes by categoryId
+      description: Gets notes by the Category ID
+        (e.g. “/category/1/notes)
       responses:
         200:
           description: Successful operation
@@ -190,7 +329,7 @@ paths:
     post:
       tags:
         - Notes
-      summary: Create note
+      summary: Create new note
       description: Creates a new note
       requestBody:
         required: true
@@ -208,25 +347,37 @@ paths:
                   description: The note's order
                 description:
                   type: string
+                isUrgent:
+                  type: boolean
+                  description: Is note urgent
                 userId:
                   type: string
                   description: The note's Assignee
+                categoryId:
+                  type: string
+                  description: The note's category
               required:
                 - title
                 - order
+                - isUrgent
       responses:
         201:
-          description: The task has been created.
+          description: The note has been created.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
+                $ref: "#/components/schemas/Note"
         400:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
-  /notes/{noteId}:
+  /categories/{categoryId}/notes/{noteId}:
     parameters:
+      - name: categoryId
+        in: path
+        required: true
+        schema:
+          type: string
       - name: noteId
         in: path
         required: true
@@ -235,8 +386,9 @@ paths:
     get:
       tags:
         - Notes
-      summary: Get note by id
-      description: Gets the Note by ID (e.g. “/notes/123”)
+      summary: Get Note by categoryId and noteId
+      description: Gets the Note by the Category's and note ID
+        (e.g. “/category/1/notes/123”)
       responses:
         200:
           description: Successful operation
@@ -246,12 +398,10 @@ paths:
                 $ref: "#/components/schemas/Note"
         401:
           $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Note not found
     put:
       tags:
         - Notes
-      summary: Update note
+      summary: Update Note
       description: Updates a Note by ID
       requestBody:
         required: true
@@ -269,12 +419,19 @@ paths:
                   description: The note's order
                 description:
                   type: string
+                isUrgent:
+                  type: boolean
+                  description: Is note urgent
                 userId:
                   type: string
                   description: The note's Assignee
+                categoryId:
+                  type: string
+                  description: The note's Category
               required:
-                - title
-                - columns
+                - order
+                - userId
+                - categoryId
       responses:
         200:
           description: The note has been updated.
@@ -286,10 +443,12 @@ paths:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Note not found
     delete:
       tags:
         - Notes
-      summary: Delete note
+      summary: Delete Note
       description: Deletes a Note by ID.
       responses:
         204:
