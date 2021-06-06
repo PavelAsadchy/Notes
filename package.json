@@ -19,5 +19,6 @@
   "bugs": {
     "url": "https://github.com/PavelAsadchy/Notes/issues"
   },
-  "homepage": "https://github.com/PavelAsadchy/Notes#readme"
+  "homepage": "https://github.com/PavelAsadchy/Notes#readme",
+  "dependencies": {}
 }
