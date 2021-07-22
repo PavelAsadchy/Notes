@@ -6,6 +6,4 @@ type cbFunc = (
   next: NextFunction,
 ) => Promise<void>
 
-const asyncWrapper = (callback: cbFunc): cbFunc => (req: Request, res: Response, next: NextFunction) => callback(req, res, next).catch(next);
-
-export default asyncWrapper;
+export const asyncWrapper = (callback: cbFunc): cbFunc => (req: Request, res: Response, next: NextFunction) => callback(req, res, next).catch(next);

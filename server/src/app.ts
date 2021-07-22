@@ -7,9 +7,10 @@ import { errorLog } from './utils/logger';
 import { loggingMiddleware } from './middlewares/logging';
 import { errorHandling } from './middlewares/errorHandle';
 
-import userRouter from './resourses/users/user.router';
-import categoryRouter from './resourses/categories/category.router';
-import noteRouter from './resourses/notes/note.router';
+import { loginRouter } from './auth/login/login.router';
+import { userRouter } from './resourses/users/user.router';
+import { categoryRouter } from './resourses/categories/category.router';
+import { noteRouter } from './resourses/notes/note.router';
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
 
 app.use(loggingMiddleware);
 
+app.use('/login', loginRouter);
 app.use('/users', userRouter);
 app.use('/categories', categoryRouter);
 categoryRouter.use('/:categoryId/notes', noteRouter);
