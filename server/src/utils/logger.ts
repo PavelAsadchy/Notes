@@ -10,10 +10,10 @@ const logger = createLogger({
       )
     }),
     new transports.File({
-      filename: 'debug.log'
+      filename: './logs/debug.log'
     }),
     new transports.File({
-      filename: 'error.log',
+      filename: './logs/error.log',
       level: 'error',
       format: format.json()
     })
