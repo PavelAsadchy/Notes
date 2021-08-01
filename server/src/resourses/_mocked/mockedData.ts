@@ -1,7 +1,7 @@
 // TODO: mock implementation. should be replaced during task development
-import { User } from '../users/user.model';
-import { Category } from '../categories/category.model';
-import { Note } from '../notes/note.model';
+import { User } from '../../entities/user.model';
+import { Category } from '../../entities/category.model';
+import { Note } from '../../entities/note.model';
 
 export interface IMockedDB {
   Users: User[];
