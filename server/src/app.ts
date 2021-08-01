@@ -6,6 +6,7 @@ import YAML from 'yamljs';
 import { errorLog } from './utils/logger';
 import { loggingMiddleware } from './middlewares/logging';
 import { errorHandling } from './middlewares/errorHandle';
+import { validateToken } from './middlewares/validateToken';
 
 import { loginRouter } from './auth/login/login.router';
 import { userRouter } from './resourses/users/user.router';
@@ -40,6 +41,7 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(loggingMiddleware);
+app.use(validateToken);
 
 app.use('/login', loginRouter);
 app.use('/users', userRouter);

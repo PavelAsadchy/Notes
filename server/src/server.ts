@@ -3,7 +3,7 @@ import { log } from './utils/logger';
 import app from './app';
 import { dbConnect } from './database/db';
 
-dbConnect(() => {
+dbConnect(async () => {
   app.listen(PORT, () =>
     log(`App is running on http://localhost:${PORT}`)
   );
