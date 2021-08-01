@@ -1,40 +1,41 @@
 import express, { Request, Response } from 'express';
 import noteService from './note.service';
-import asyncWrapper from '../../utils/asyncWrapper';
+import { asyncWrapper } from '../../utils/asyncWrapper';
+import * as StatusCodes from '../../utils/statusCodes';
 
 // Access parent route params with mergeParams: true
-const router = express.Router({mergeParams: true});
+const noteRouter = express.Router({mergeParams: true});
 
-router.route('/').get(asyncWrapper(async (req: Request, res: Response) => {
+noteRouter.route('/').get(asyncWrapper(async (req: Request, res: Response) => {
   const { categoryId } = req.params;
   const tasks = await noteService.getAll(categoryId);
-  res.status(200).json(tasks);
+  res.status(StatusCodes.OK).json(tasks);
 }));
 
-router.route('/:id').get(asyncWrapper(async (req: Request, res: Response) => {
+noteRouter.route('/:id').get(asyncWrapper(async (req: Request, res: Response) => {
   const { categoryId, id } = req.params;
   const note = await noteService.getById(categoryId, id);
-  res.status(200).json(note);
+  res.status(StatusCodes.OK).json(note);
 }));
 
-router.route('/').post(asyncWrapper(async (req: Request, res: Response) => {
+noteRouter.route('/').post(asyncWrapper(async (req: Request, res: Response) => {
   const { categoryId } = req.params;
   const newNote = req.body;
   const note = await noteService.save(categoryId, newNote);
-  res.status(201).json(note);
+  res.status(StatusCodes.CREATED).json(note);
 }));
 
-router.route('/:id').put(asyncWrapper(async (req: Request, res: Response) => {
+noteRouter.route('/:id').put(asyncWrapper(async (req: Request, res: Response) => {
   const { categoryId, id } = req.params;
   const noteUpdates = req.body;
   const note = await noteService.update(categoryId, id, noteUpdates);
-  res.status(200).json(note);
+  res.status(StatusCodes.OK).json(note);
 }));
 
-router.route('/:id').delete(asyncWrapper(async (req: Request, res: Response) => {
+noteRouter.route('/:id').delete(asyncWrapper(async (req: Request, res: Response) => {
   const { categoryId, id } = req.params;
   await noteService.remove(categoryId, id);
-  res.sendStatus(204);
+  res.sendStatus(StatusCodes.NO_CONTENT);
 }));
 
-export default router;
+export { noteRouter };

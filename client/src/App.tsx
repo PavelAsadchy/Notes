@@ -1,4 +1,5 @@
 import { FC, ReactElement } from 'react';
+import Auth from './components/Auth/Auth';
 import NotesClient from './components/NotesClient/NotesClient';
 
 const App: FC = (): ReactElement => {
@@ -6,6 +7,7 @@ const App: FC = (): ReactElement => {
     <div>
       Client
       <NotesClient />
+      <Auth />
     </div>
   );
 }

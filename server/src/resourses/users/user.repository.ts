@@ -1,37 +1,39 @@
-import { User } from "./user.model";
+import { getRepository } from "typeorm";
+import { User } from "../../entities/user.model";
 import { NOT_FOUND_ERROR } from '../../errors/notFound.error';
-import { MOCKED_DB as DB } from '../_mocked/mockedData';
 
-const TABLE = 'Users';
-
-const getAll = async (): Promise<User[]> => DB[TABLE];
+const getAll = async (): Promise<User[]> => getRepository(User).find();
 
 const getById = async (id: string): Promise<User> => {
-  const entity = await DB[TABLE].find((user: User) => user.id === id);
+  const entity = await getRepository(User).findOne(id);
   if (!entity) throw new NOT_FOUND_ERROR(`Entity with ${id} not found`);
 
   return entity;
 };
 
 const save = async (newUserParams: User): Promise<User> => {
-  const { name, login, password } = newUserParams;
-  const newUser = new User({name, login, password});
-  DB[TABLE].push(newUser);
-  return newUser;
+  const userRepository = getRepository(User);
+  const newUser = userRepository.create(newUserParams);
+  await userRepository.save(newUser);
+  return getById(newUser.id);
 };
 
 const update = async (id: string, userUpdates: User): Promise<User> => {
-  const userToUpdate = await getById(id);
-  if (userToUpdate) DB[TABLE][DB[TABLE].indexOf(userToUpdate)] = {...userToUpdate, ...userUpdates };
+  const userRepository = getRepository(User);
+  const entity = await userRepository.findOne(id);
+  if (!entity) {
+    throw new NOT_FOUND_ERROR(`Entity with ${id} not found`);
+  }
 
+  await userRepository.update(id, userUpdates);
   return getById(id);
 };
 
 const remove = async (id: string): Promise<void> => {
-  const index = DB[TABLE].findIndex((user: User) => user.id === id);
-  if (index === -1) throw new NOT_FOUND_ERROR(`Entity with ${id} not found`);
-
-  DB[TABLE].splice(index, 1);
+  const entity = await getRepository(User).delete({ id });
+  if (!entity) {
+    throw new NOT_FOUND_ERROR(`Entity with ${id} not found`);
+  }
 };
 
 export default { getAll, getById, save, update, remove };

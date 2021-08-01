@@ -1,39 +1,40 @@
 import express, { Request, Response } from 'express';
-import { User } from './user.model';
+import { User } from '../../entities/user.model';
 import usersService from './user.service';
-import asyncWrapper from '../../utils/asyncWrapper';
+import { asyncWrapper } from '../../utils/asyncWrapper';
+import * as StatusCodes from '../../utils/statusCodes';
 
-const router = express.Router();
+const userRouter = express.Router();
 
-router.route('/').get(asyncWrapper(async (_req: Request, res: Response) => {
+userRouter.route('/').get(asyncWrapper(async (_req: Request, res: Response) => {
   const users = await usersService.getAll();
   // map user fields to exclude secret fields like "password"
-  res.status(200).json(users.map(User.toResponse));
+  res.status(StatusCodes.OK).json(users.map(User.toResponse));
 }));
 
-router.route('/:id').get(asyncWrapper(async (req: Request, res: Response) => {
+userRouter.route('/:id').get(asyncWrapper(async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = await usersService.getById(id);
-  res.status(200).json(User.toResponse(user));
+  res.status(StatusCodes.OK).json(User.toResponse(user));
 }));
 
-router.route('/').post(asyncWrapper(async (req: Request, res: Response) => {
+userRouter.route('/').post(asyncWrapper(async (req: Request, res: Response) => {
   const newUser = req.body;
   const user = await usersService.save(newUser);
-  res.status(201).json(User.toResponse(user));
+  res.status(StatusCodes.CREATED).json(User.toResponse(user));
 }));
 
-router.route('/:id').put(asyncWrapper(async (req: Request, res: Response) => {
+userRouter.route('/:id').put(asyncWrapper(async (req: Request, res: Response) => {
   const { id } = req.params;
   const userUpdates = req.body;
   const user = await usersService.update(id, userUpdates);
-  res.status(200).json(User.toResponse(user));
+  res.status(StatusCodes.OK).json(User.toResponse(user));
 }));
 
-router.route('/:id').delete(asyncWrapper(async (req: Request, res: Response) => {
+userRouter.route('/:id').delete(asyncWrapper(async (req: Request, res: Response) => {
   const { id } = req.params;
   await usersService.remove(id);
-  res.sendStatus(204);
+  res.sendStatus(StatusCodes.NO_CONTENT);
 }));
 
-export default router;
+export { userRouter };
